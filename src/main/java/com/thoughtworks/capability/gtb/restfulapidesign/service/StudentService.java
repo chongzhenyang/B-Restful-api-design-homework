@@ -7,9 +7,18 @@ import java.util.Optional;
 
 public interface StudentService {
     Student createStudent(Student student);
+
     void deleteStudent(Long id);
+
     Optional<Student> findStudentById(Long id);
-    Student updateStudent(Long id, String name, String gender, String note);
+
+    Optional<Student> findStudentByName(String name);
+
     void reassignStudent();
+
+    List<Student> getAllStudentsByGender(String gender);
+
     List<Student> getAllStudents();
+
+    List<Student> getStudentsInaGroup(Long groupNumber);
 }

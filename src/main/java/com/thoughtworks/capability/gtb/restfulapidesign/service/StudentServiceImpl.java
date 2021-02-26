@@ -3,6 +3,8 @@ package com.thoughtworks.capability.gtb.restfulapidesign.service;
 import com.thoughtworks.capability.gtb.restfulapidesign.model.Student;
 import com.thoughtworks.capability.gtb.restfulapidesign.repository.StudentRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class StudentServiceImpl implements StudentService{
+public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
 
     @Override
@@ -29,23 +31,40 @@ public class StudentServiceImpl implements StudentService{
     }
 
     @Override
-    public Student updateStudent(Long id, String name, String gender, String note) {
-        Student originalStudent = studentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("invalid id"));
-        if(name != null){originalStudent.setName(name);}
-        if(gender != null){originalStudent.setGender(gender);}
-        if(note != null){originalStudent.setNote(note);}
-        studentRepository.deleteById(id);
-        studentRepository.save(originalStudent);
-        return originalStudent;
+    public Optional<Student> findStudentByName(String name) {
+        return studentRepository.findStudentByName(name);
     }
 
     @Override
     public void reassignStudent() {
+        long count = studentRepository.count();
+        for (long i = 1, currGroup = 1; i <= count; i++, currGroup++) {
+            Student student = studentRepository.findById(i).get();
+            if (currGroup > 6) {
+                currGroup = 1;
+            }
+            student.setGroupNumber(currGroup);
+            studentRepository.save(student);
+        }
+    }
 
+    @Override
+    public List<Student> getAllStudentsByGender(String gender) {
+        Student student = new Student();
+        student.setGender(gender);
+        ExampleMatcher matcher = ExampleMatcher.matching().withMatcher("gender", ExampleMatcher.GenericPropertyMatchers
+                .startsWith()).withIgnorePaths("id");
+        Example<Student> ex = Example.of(student, matcher);
+        return studentRepository.findAll(ex);
     }
 
     @Override
     public List<Student> getAllStudents() {
         return studentRepository.findAll();
+    }
+
+    @Override
+    public List<Student> getStudentsInaGroup(Long groupNumber) {
+        return studentRepository.findStudentsByGroupNumber(groupNumber);
     }
 }

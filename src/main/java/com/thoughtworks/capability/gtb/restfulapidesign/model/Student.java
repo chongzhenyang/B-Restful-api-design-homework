@@ -12,16 +12,24 @@ import javax.persistence.*;
 @Table
 public class Student {
     @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Getter@Setter@NonNull
+    @Getter
+    @Setter
     private String name;
 
-    @Getter@Setter@NonNull
+    @Getter
+    @Setter
     private String gender;
 
-    @Getter@Setter
+    @Getter
+    @Setter
     private String note;
+
+    @Getter
+    @Setter
+    private long groupNumber;
 }
